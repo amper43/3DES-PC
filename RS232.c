@@ -87,24 +87,16 @@ OVERLAPPED sync = {0};
 int reuslt = 0;
 unsigned long wait = 0, read = 0, state = 0;
  
-/* Создаем объект синхронизации */
+
 sync.hEvent = CreateEvent(NULL,TRUE,FALSE,NULL);
  
-/* Устанавливаем маску на события порта */
 if(SetCommMask(*hSerial,EV_RXCHAR)) {
-	printf("SetCommMask\n");
-	/* Связываем порт и объект синхронизации*/
 	WaitCommEvent(*hSerial, &state, &sync);
-	/* Начинаем ожидание данных*/	
-	wait = WaitForSingleObject(sync.hEvent, timeout);
-	/* Данные получены */		
+	wait = WaitForSingleObject(sync.hEvent, timeout);	
 	if(wait == WAIT_OBJECT_0) {
 		printf("start read\n");
-		/* Начинаем чтение данных */
 		ReadFile(*hSerial, dst, size, &read, &sync);
-		/* Ждем завершения операции чтения */
 		wait = WaitForSingleObject(sync.hEvent, READ_TIME);
-		/* Если все успешно завершено, узнаем какой объем данных прочитан */
 		if(wait == WAIT_OBJECT_0) 
 			if(GetOverlappedResult(*hSerial, &sync, &read, FALSE)) 
 				reuslt = read;
