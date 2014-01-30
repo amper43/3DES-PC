@@ -11,6 +11,7 @@ int portInit(HANDLE* hSerial, char* portNumber, int BaudRate,BYTE ByteSize, BYTE
 int writePort(HANDLE* hSerial, char* bytes, int length);
 int readPort(HANDLE *hSerial, char* dst, int size, int timeout);
 int closePort(HANDLE* hSerial);
+int EnumerateSerialPorts(char* name, int length);
 
 
 

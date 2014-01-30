@@ -1,5 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
+#include <TCHAR.H > 
+#include <conio.h> 
 
 #include "RS232.h"
 
@@ -94,7 +96,6 @@ if(SetCommMask(*hSerial,EV_RXCHAR)) {
 	WaitCommEvent(*hSerial, &state, &sync);
 	wait = WaitForSingleObject(sync.hEvent, timeout);	
 	if(wait == WAIT_OBJECT_0) {
-		printf("start read\n");
 		ReadFile(*hSerial, dst, size, &read, &sync);
 		wait = WaitForSingleObject(sync.hEvent, READ_TIME);
 		if(wait == WAIT_OBJECT_0) 
@@ -116,3 +117,58 @@ int closePort(HANDLE *hSerial)
     }
 	return 0;
 }
+
+
+//------------------------------------------------------------------------------
+int EnumerateSerialPorts(char* name, int length)
+  {
+    
+  
+	  // Используем QueryDosDevice для просмотра всех устройств
+        //  похожих на COMx.
+       // Это наилучшее решение, так как порты не требуется открывать
+        char szDevices[65535];
+        DWORD dwChars = QueryDosDevice(NULL, szDevices, 65535);
+		int rezult = 0;
+		int charCounter = 0;
+        if(dwChars)
+          {
+            int i=0;
+
+              for (;;)
+                {
+                  // Получаем текущее имя устройства
+                  char* pszCurrentDevice = &szDevices[i];
+
+                  // Если похоже на "COMX" выводим на экран
+                  int nLen = _tcslen(pszCurrentDevice);
+                    if(nLen > 3 && _tcsnicmp(pszCurrentDevice, _T("COM"), 3)
+                      == 0)
+                      {
+						int j;
+						rezult++;
+						charCounter += strlen(pszCurrentDevice);
+						for(j = 0;j < strlen(pszCurrentDevice) && j < length; j++) name[j] = pszCurrentDevice[j];
+						name[charCounter] = '\n';
+						charCounter++;
+                     }
+
+                  // Переходим к следующему символу терминатору
+                  while(szDevices[i] != _T('\0'))
+                    i++;
+
+                  // Перескакиваем на следующую строку
+                    i++;
+
+                  // Список завершается двойным симмволом терминатором,
+                  // так что если символ
+                  // NULL, мы дошли до конца
+                  if(szDevices[i] == _T('\0'))
+				  {
+
+					name[charCounter] = '\0';
+                    return rezult;
+				  }
+                }
+            }
+  }

@@ -1,11 +1,8 @@
-#ifndef _DES_H_
-#define _DES_H_
+#ifndef _DES_H
+#define _DES_H
 
-void bitTansposition(char* arr, char* mask, int length);
-
-
-
-
-
+typedef char bool;
+void EncryptDES(bool key[56], bool outBlk[64], bool inBlk[64], int verbose);
+void DecryptDES(bool key[56], bool outBlk[64], bool inBlk[64], int verbose);
 
 #endif
